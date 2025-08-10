@@ -1,0 +1,126 @@
+#include<bits/stdc++.h>
+#include<bits/extc++.h>
+#define inf64 (long long)0x3f3f3f3f3f3f3f3f
+#define inf32 (int)0x3f3f3f3f
+#define _inf32 (int)0xc0c0c0c0
+#define _inf64 (long long)0xc0c0c0c0c0c0c0c0
+#define N 1210
+#define M 120010
+int in(){
+    int sum=0,c=getchar();
+    while(c<48||57<c)c=getchar();
+    while(48<=c&&c<=57)sum=(sum<<3)+(sum<<1)+c-48,c=getchar();
+    return sum;
+}
+using namespace std;
+using namespace __gnu_pbds;
+struct HLPP{
+    struct edge{
+        int v;
+        long long c;
+        int nex;
+    }e[M<<4];
+    int nume;
+    int n,m,s,t;
+    int las[N<<3],h[N<<3],num[N<<4];
+    long long maxf,f[N<<3];
+    struct qpoint{
+        int u,h;
+        const bool operator<(const qpoint p)const{
+            return h<p.h;
+        }
+    };
+    std::priority_queue<qpoint> q;
+    bitset<N<<3> inq;
+    void emp(){
+        memset(las,-1,sizeof(las));
+    }
+    void add(int u,int v,int c){
+        e[nume]={v,c,las[u]};
+        las[u]=nume++;
+    }
+    bool bfsh(){
+        memset(h,inf32,sizeof(h));
+        h[t]=0;
+        int ql,qr,q[N<<3];
+        q[ql=qr=1]=t;
+        while(ql<=qr){
+            int u=q[ql++];
+            for(int i=las[u];i!=-1;i=e[i].nex){
+                int v=e[i].v;
+                if(e[i^1].c==0)continue;
+                if(h[u]+1<h[v]){
+                    h[v]=h[u]+1;
+                    q[++qr]=v;
+                }
+            }
+        }
+        return h[s]==inf32?0:(h[s]=n);
+    }
+    void pu(int u){
+        for(int i=las[u];i!=-1 && f[u];i=e[i].nex){
+            int v=e[i].v;
+            long long c=e[i].c;
+            if(c==0)continue;
+            long long C=inf64;
+            if(u==s)C=c;
+            else if(h[u]==h[v]+1)C=min(f[u],c);
+            if(C!=inf64){
+                f[u]-=C,f[v]+=C;
+                e[i].c-=C,e[i^1].c+=C;
+                if(v!=s && v!=t && inq[v]==0){
+                    q.push({v,h[v]});
+                    inq[v]=1;
+                }
+            }
+        }
+    }
+    void gap(int H){
+        for(int u=1;u<=n;u++){
+            if(u!=s && u!=t && H<h[u] && h[u]<n+1){
+                h[u]=n+1;
+            }
+        }
+    }
+    void updh(int u){
+        h[u]=inf32;
+        for(int i=las[u];i!=-1;i=e[i].nex){
+            int v=e[i].v,c=e[i].c;
+            if(c==0)continue;
+            h[u]=min(h[u],h[v]+1);
+        }
+    }
+    void sol(){
+        if(bfsh()==0)return;
+        for(int i=1;i<=n;i++){
+            if(h[i]!=inf32)num[h[i]]++;
+        }
+        f[s]=inf64;
+        pu(s);
+        while(q.empty()==0){
+            int u=q.top().u;
+            q.pop();
+            inq[u]=0;
+            pu(u);
+            if(f[u]==0)continue;
+            if(h[u]!=inf32 && --num[h[u]]==0)gap(h[u]);
+            updh(u);
+            num[h[u]]++;
+            q.push({u,h[u]});
+            inq[u]=1;
+        }
+        maxf=f[t];
+    }
+}hlpp;
+int u,v,c;
+int main(){
+    hlpp.n=in(),hlpp.m=in(),hlpp.s=in(),hlpp.t=in();
+    hlpp.emp();
+    for(int i=1;i<=hlpp.m;i++){
+        u=in(),v=in(),c=in();
+        hlpp.add(u,v,c);
+        hlpp.add(v,u,0);
+    }
+    hlpp.sol();
+    printf("%lld",hlpp.maxf);
+}
