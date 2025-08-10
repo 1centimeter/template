@@ -1,0 +1,113 @@
+#include<bits/stdc++.h>
+#include<bits/extc++.h>
+#define inf64 (long long)0x3f3f3f3f3f3f3f3f
+#define inf32 (int)0x3f3f3f3f
+#define _inf32 (int)0xc0c0c0c0
+#define _inf64 (long long)0xc0c0c0c0c0c0c0c0
+#define N 5010
+#define M 50010
+int in(){
+    int sum=0,c=getchar();
+    while(c<48||57<c)c=getchar();
+    while(48<=c&&c<=57)sum=(sum<<3)+(sum<<1)+c-48,c=getchar();
+    return sum;
+}
+using namespace std;
+using namespace __gnu_pbds;
+struct PD{
+    struct edge{
+        int v;
+        long long c,w;
+        int nex;
+    }e[M<<1];
+    int nume;
+    int n,m,s,t;
+    int las[N],pre[N];
+    long long maxf,minw,h[N],dis[N];
+    struct qpoint{
+        int u;
+        long long dis;
+        const bool operator<(const qpoint q)const{
+            return dis>q.dis;
+        }
+    };
+    void emp(){
+        memset(las,-1,sizeof(las));
+    }
+    void add(int u,int v,int c,int w){
+        e[nume]={v,c,w,las[u]};
+        las[u]=nume++;
+    }
+    void spfa(){
+        memset(h,inf64,sizeof(h));
+        h[s]=0;
+        queue<int> q;
+        q.push(s);
+        bitset<N> inq;
+        inq[s]=1;
+        while(q.empty()==0){
+            int u=q.front();
+            q.pop();
+            inq[u]=0;
+            for(int i=las[u];i!=-1;i=e[i].nex){
+                int v=e[i].v;
+                long long c=e[i].c,w=e[i].w;
+                if(c==0)continue;
+                if(h[u]+w<h[v]){
+                    h[v]=h[u]+w;
+                    if(inq[v]==0)q.push(v),inq[v]=1;
+                }
+            }
+        }
+    }
+    bool dij(){
+        memset(dis,inf64,sizeof(dis));
+        dis[s]=0;
+        std::priority_queue<qpoint> q;
+        q.push({s,0});
+        bitset<N> vis;
+        while(q.empty()==0){
+            int u=q.top().u;
+            q.pop();
+            if(vis[u])continue;
+            vis[u]=1;
+            for(int i=las[u];i!=-1;i=e[i].nex){
+                int v=e[i].v;
+                long long c=e[i].c,neww=e[i].w+h[u]-h[v];
+                if(c==0)continue;
+                if(dis[u]+neww<dis[v]){
+                    dis[v]=dis[u]+neww;
+                    pre[v]=i;
+                    if(vis[v]==0)q.push({v,dis[v]});
+                }
+            }
+        }
+        return dis[t]!=inf64;
+    }
+    void sol(){
+        spfa();
+        while(dij()){
+            long long minc=inf64;
+            for(int u=1;u<=n;u++)h[u]+=dis[u];
+            for(int i=t;i!=s;i=e[pre[i]^1].v)minc=min(minc,e[pre[i]].c);
+            for(int i=t;i!=s;i=e[pre[i]^1].v){
+                e[pre[i]].c-=minc;
+                e[pre[i]^1].c+=minc;
+            }
+            maxf+=minc;
+            minw+=minc*h[t];
+        }
+    }
+}pd;
+int u,v,c,w;
+int main(){
+    pd.n=in(),pd.m=in(),pd.s=in(),pd.t=in();
+    pd.emp();
+    for(int i=1;i<=pd.m;i++){
+        u=in(),v=in(),c=in(),w=in();
+        pd.add(u,v,c,w);
+        pd.add(v,u,0,-w);
+    }
+    pd.sol();
+    printf("%lld %lld",pd.maxf,pd.minw);
+}
