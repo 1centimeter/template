@@ -27,7 +27,7 @@ inline int in(){
     while(48<=c&&c<=57)sum=(sum<<3)+(sum<<1)+c-48,c=getchar();
     return f?(~sum)+1:sum;
 }
-struct jsjsegmenttree{
+struct segmenttreebeats{
     struct node{
         int len;
         long long sum;
@@ -245,4 +245,5 @@ struct jsjsegmenttree{
 int main(){
     
 }
+
 
