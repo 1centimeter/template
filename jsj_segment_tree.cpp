@@ -245,3 +245,4 @@ struct jsjsegmenttree{
 int main(){
     
 }
+
