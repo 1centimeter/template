@@ -141,7 +141,7 @@ struct segmenttreebeats{
         if(mid+1<=y)mdfadd(num<<1|1,mid+1,r,max(x,mid+1),y,v);
         pu(num);
     }
-    void mdfmax(int num,int l,int r,int x,int y,int v){//区间取max
+    void mdfmax(int num,int l,int r,int x,int y,int v){//区间取最大值
         pd(num);
         int mid=l+r>>1;
         if(l==x && r==y){
@@ -171,7 +171,7 @@ struct segmenttreebeats{
         if(mid+1<=y)mdfmax(num<<1|1,mid+1,r,max(x,mid+1),y,v);
         pu(num);
     }
-    void mdfmin(int num,int l,int r,int x,int y,int v){//区间取min
+    void mdfmin(int num,int l,int r,int x,int y,int v){//区间取最小值
         pd(num);
         int mid=l+r>>1;
         if(l==x && r==y){
@@ -201,7 +201,7 @@ struct segmenttreebeats{
         if(mid+1<=y)mdfmin(num<<1|1,mid+1,r,max(x,mid+1),y,v);
         pu(num);
     }
-    long long qrysum(int num,int l,int r,int x,int y){//区间求和
+    long long qrysum(int num,int l,int r,int x,int y){//求区间和
         pd(num);
         if(l==x && r==y)return t[num].sum;
         int mid=l+r>>1;
@@ -209,7 +209,7 @@ struct segmenttreebeats{
         if(mid+1<=x)return qrysum(num<<1|1,mid+1,r,x,y);
         return qrysum(num<<1,l,mid,x,mid)+qrysum(num<<1|1,mid+1,r,mid+1,y);
     }
-    int qrypmax(int num,int l,int r,int x,int y){//区间求历史max
+    int qrypmax(int num,int l,int r,int x,int y){//求区间{历史最大值}最大值
         pd(num);
         if(l==x && r==y)return t[num].pmax;
         int mid=l+r>>1;
@@ -217,7 +217,7 @@ struct segmenttreebeats{
         if(mid+1<=x)return qrypmax(num<<1|1,mid+1,r,x,y);
         return max(qrypmax(num<<1,l,mid,x,mid),qrypmax(num<<1|1,mid+1,r,mid+1,y));
     }
-    int qrymax(int num,int l,int r,int x,int y){//区间求max
+    int qrymax(int num,int l,int r,int x,int y){//求区间最大值
         pd(num);
         if(l==x && r==y)return t[num].max;
         int mid=l+r>>1;
@@ -225,7 +225,7 @@ struct segmenttreebeats{
         if(mid+1<=x)return qrymax(num<<1|1,mid+1,r,x,y);
         return max(qrymax(num<<1,l,mid,x,mid),qrymax(num<<1|1,mid+1,r,mid+1,y));
     }
-    int qrypmin(int num,int l,int r,int x,int y){//区间求历史min
+    int qrypmin(int num,int l,int r,int x,int y){//求区间{历史最小值}最小值
         pd(num);
         if(l==x && r==y)return t[num].pmin;
         int mid=l+r>>1;
@@ -233,7 +233,7 @@ struct segmenttreebeats{
         if(mid+1<=x)return qrypmin(num<<1|1,mid+1,r,x,y);
         return min(qrypmin(num<<1,l,mid,x,mid),qrypmin(num<<1|1,mid+1,r,mid+1,y));
     }
-    int qrymin(int num,int l,int r,int x,int y){//区间求min
+    int qrymin(int num,int l,int r,int x,int y){//求区间最小值
         pd(num);
         if(l==x && r==y)return t[num].min;
         int mid=l+r>>1;
@@ -245,5 +245,21 @@ struct segmenttreebeats{
 int main(){
     
 }
+/*
+sum(l,r){ sum(pre,now) } = sum(pre,now){ sum(l,r) }:区间{历史和}和//即区间历史版本和
+max(l,r){ max(pre,now) } = max(pre,now){ max(l,r) }:区间{历史最大值}最大值//即区间历史最大值
+min(l,r){ min(pre,now) } = min(pre,now){ min(l,r) }:区间{历史最小值}最小值//即区间历史最小值
+sum(l,r){ max(pre,now) }:区间{历史最大值}和//可做
+sum(l,r){ min(pre,now) }:区间{历史最小值}和//可做
+max(l,r){ min(pre,now) }:区间{历史最小值}最大值
+min(l,r){ max(pre,now) }:区间{历史最大值}最小值
+min(l,r){ sum(pre,now) }:区间{历史和}最小值
+max(l,r){ sum(pre,now) }:区间{历史和}最大值
 
-
+sum(pre,now){ max(l,r) }:{区间最大值}历史和
+sum(pre,now){ min(l,r) }:{区间最小值}历史和
+max(pre,now){ min(l,r) }:{区间最小值}历史最大值
+min(pre,now){ max(l,r) }:{区间最大值}历史最小值
+min(pre,now){ sum(l,r) }:{区间和}历史最小值
+max(pre,now){ sum(l,r) }:{区间和}历史最大值
+*/
